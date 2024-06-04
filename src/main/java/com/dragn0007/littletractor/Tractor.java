@@ -25,6 +25,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.item.DyeColor;
@@ -34,10 +35,14 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import net.minecraftforge.network.NetworkHooks;
@@ -223,6 +228,7 @@ public class Tractor extends Entity implements ContainerListener {
     private void harvestCrop(BlockPos pos) {
         if(this.level().getBlockState(pos).getBlock() instanceof CropBlock cropBlock) {
             BlockState blockState = this.level().getBlockState(pos);
+
             if(cropBlock.isMaxAge(blockState)) {
                 List<ItemStack> drops = Block.getDrops(blockState, (ServerLevel) this.level(), pos, null);
                 drops.remove(new ItemStack(cropBlock.asItem()));
@@ -237,6 +243,23 @@ public class Tractor extends Entity implements ContainerListener {
                 this.level().setBlockAndUpdate(pos, blockState.setValue(cropBlock.getAgeProperty(), 0));
             }
         }
+    }
+    private static Property<Integer> getCropProperty(BlockState state, String propertyName) {
+        Block block = state.getBlock();
+        if (block instanceof CropBlock cropBlock) {
+            for (Property<?> prop : state.getProperties()) {
+                if (prop instanceof IntegerProperty && prop.getName().equals(propertyName)) {
+                    return (Property<Integer>) prop;
+                }
+            }
+        }
+        return null;
+    }
+    private static int getMaxAge(Block block) {
+        if (block instanceof CropBlock cropBlock) {
+            return cropBlock.getMaxAge();
+        }
+        return 7;
     }
 
     public void till() {
