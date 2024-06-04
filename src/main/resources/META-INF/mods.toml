@@ -1,0 +1,26 @@
+modLoader="javafml"
+loaderVersion="[40,)"
+license="All Rights Reserved, DragN0007"
+issueTrackerURL="https://discord.gg/jubppqCzXj"
+[[mods]]
+modId="liltractor"
+version="${1.18.2-1.0}"
+displayName="Little Tractor"
+logoFile="liltractor_logo.png"
+credits="PhantomsKeep/ SWEMY for the idea!"
+authors="DragN0007"
+description='''
+A dyable tractor that harvests and replants crops!
+'''
+[[dependencies.dffeasts]]
+    modId="forge"
+    mandatory=true
+    versionRange="[40,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.dffeasts]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.18.2,1.19.0)"
+    ordering="NONE"
+    side="BOTH"
