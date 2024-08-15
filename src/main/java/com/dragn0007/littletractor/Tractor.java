@@ -275,9 +275,9 @@ public class Tractor extends Entity implements ContainerListener {
         BlockPos midPos = new BlockPos((int) Math.floor(mid.x), (int) Math.floor(mid.y), (int) Math.floor(mid.z));
         BlockPos rightPos = new BlockPos((int) Math.floor(right.x), (int) Math.floor(right.y), (int) Math.floor(right.z));
 
-        this.harvestCrop(leftPos);
-        this.harvestCrop(midPos);
-        this.harvestCrop(rightPos);
+        this.tillNewFarmland(leftPos);
+        this.tillNewFarmland(midPos);
+        this.tillNewFarmland(rightPos);
     }
 
     private void handleInput(Input input) {
