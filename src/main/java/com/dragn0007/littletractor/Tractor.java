@@ -449,7 +449,7 @@ public class Tractor extends Entity implements ContainerListener {
         ListTag listTag = compoundTag.getList("Items", 10);
         for(int i = 0; i < listTag.size(); i++) {
             CompoundTag tag = listTag.getCompound(i);
-            int j = compoundTag.getByte("Slot") & 255;
+            int j = tag.getByte("Slot") & 255;
             if(j < this.inventory.getContainerSize()) {
                 this.inventory.setItem(j, ItemStack.of(tag));
             }
