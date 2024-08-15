@@ -30,7 +30,7 @@ public class Network {
             ServerPlayer player = context.get().getSender();
             if(player != null) {
                 if(player.level().getEntity(msg.id) instanceof Tractor tractor) {
-                    tractor.toggleTillerPower();
+                    tractor.cycleMode();
                 }
             }
         }

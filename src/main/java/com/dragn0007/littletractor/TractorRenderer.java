@@ -2,12 +2,14 @@ package com.dragn0007.littletractor;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
@@ -57,7 +59,7 @@ public class TractorRenderer extends EntityRenderer<Tractor> {
         poseStack.scale(-1, -1, 1);
         poseStack.translate(0, -1.5, 0);
 
-        poseStack.mulPose(Vector3f.YP.rotationDegrees(rotation - 180));
+        poseStack.mulPose(Axis.YP.rotationDegrees(rotation - 180));
         this.model.prepareMobModel(tractor, 0, 0, partialTick);
         this.model.setupAnim(tractor, partialTick, 0, 0, 0, 0);
 

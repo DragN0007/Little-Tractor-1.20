@@ -3,6 +3,7 @@ package com.dragn0007.littletractor;
 import com.mojang.logging.LogUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.syncher.EntityDataSerializer;
+import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -25,23 +26,9 @@ public class LittleTractorMain
     public static final Logger LOGGER = LogUtils.getLogger();
     public static final String MODID = "liltractor";
 
-    public static final DeferredRegister<EntityDataSerializer<?>> SERIALIZERS = DeferredRegister.create(ForgeRegistries.Keys.ENTITY_DATA_SERIALIZERS, MODID);
-    public static final RegistryObject<DataSerializerEntry> RESOURCE_SERIALIZER = SERIALIZERS.register("resource_serializer", () -> new DataSerializerEntry(new EntityDataSerializer<ResourceLocation>() {
-        @Override
-        public void write(FriendlyByteBuf buf, ResourceLocation resourceLocation) {
-            buf.writeResourceLocation(resourceLocation);
-        }
+    public static final EntityDataSerializer<Tractor.Mode> MODE = EntityDataSerializer.simpleEnum(Tractor.Mode.class);
+    public static final EntityDataSerializer<ResourceLocation> RESOURCE_SERIALIZER = EntityDataSerializer.simple(FriendlyByteBuf::writeResourceLocation, FriendlyByteBuf::readResourceLocation);
 
-        @Override
-        public ResourceLocation read(FriendlyByteBuf buf) {
-            return buf.readResourceLocation();
-        }
-
-        @Override
-        public ResourceLocation copy(ResourceLocation resourceLocation) {
-            return resourceLocation;
-        }
-    }));
 
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, MODID);
     public static final RegistryObject<EntityType<Tractor>> TRACTOR = ENTITY_TYPES.register("liltractor",
@@ -51,13 +38,12 @@ public class LittleTractorMain
     public static final RegistryObject<Item> TRACTOR_SPAWN_EGG = ITEMS.register("liltractor", TractorItem::new);
 
 
-    public LittleTractorMain()
-    {
+    public LittleTractorMain() {
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
-
         eventBus.addListener(this::setup);
 
-        SERIALIZERS.register(eventBus);
+        EntityDataSerializers.registerSerializer(RESOURCE_SERIALIZER);
+        EntityDataSerializers.registerSerializer(MODE);
         ENTITY_TYPES.register(eventBus);
         ITEMS.register(eventBus);
 

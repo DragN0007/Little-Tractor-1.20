@@ -37,7 +37,7 @@ public class TractorItem extends Item {
             if(level.getBlockState(pos).getBlock() instanceof LiquidBlock) {
                 return InteractionResultHolder.pass(itemStack);
             } else if (level.mayInteract(player, pos) && player.mayUseItemAt(pos, blockHitResult.getDirection(), itemStack)) {
-                Tractor tractor = (Tractor) LittleTractorMain.TRACTOR.get().spawn((ServerLevel) level, itemStack, player, pos.above(), MobSpawnType.SPAWN_EGG, false, false);
+                Tractor tractor = LittleTractorMain.TRACTOR.get().spawn((ServerLevel) level, itemStack, player, pos.above(), MobSpawnType.SPAWN_EGG, false, false);
                 if(tractor == null) {
                     return InteractionResultHolder.pass(itemStack);
                 } else {
@@ -46,7 +46,7 @@ public class TractorItem extends Item {
                     }
 
                     player.awardStat(Stats.ITEM_USED.get(this));
-                    level.gameEvent(GameEvent.ENTITY_PLACE, player);
+                    level.gameEvent(player, GameEvent.ENTITY_PLACE, tractor.position());
                     return InteractionResultHolder.consume(itemStack);
                 }
             } else {

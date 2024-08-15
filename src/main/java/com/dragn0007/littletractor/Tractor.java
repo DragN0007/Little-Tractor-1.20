@@ -20,12 +20,10 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.*;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.item.DyeColor;
@@ -33,17 +31,14 @@ import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
@@ -58,9 +53,9 @@ import static com.dragn0007.littletractor.LittleTractorMain.mod;
 
 public class Tractor extends Entity implements ContainerListener {
 
-    private static final EntityDataAccessor<ResourceLocation> TEXTURE = (EntityDataAccessor<ResourceLocation>) SynchedEntityData.defineId(Tractor.class, LittleTractorMain.RESOURCE_SERIALIZER.get().getSerializer());
-    private static final EntityDataAccessor<Boolean> TILLER_ON = SynchedEntityData.defineId(Tractor.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<ResourceLocation> TEXTURE = SynchedEntityData.defineId(Tractor.class, LittleTractorMain.RESOURCE_SERIALIZER);
     private static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(Tractor.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Mode> MODE = SynchedEntityData.defineId(Tractor.class, LittleTractorMain.MODE);
 
     private static final ResourceLocation DEFAULT_TEXTURE = new ResourceLocation(LittleTractorMain.MODID, "textures/entity/green.png");
 
@@ -93,14 +88,13 @@ public class Tractor extends Entity implements ContainerListener {
 
     private float targetRotation = 0;
     private float currentRotation = 0;
-
     private int tillerCooldown = 0;
-
     public int forwardMotion = 1;
 
     public int driveTick = 0;
     public float lastDrivePartialTick = 0;
-    public Vec3 lastPos = Vec3.ZERO;
+    public Vec3 lastClientPos = Vec3.ZERO;
+    public Vec3 lastServerPos = Vec3.ZERO;
 
     public SimpleContainer inventory;
     private LazyOptional<?> itemHandler;
@@ -121,7 +115,7 @@ public class Tractor extends Entity implements ContainerListener {
     @NotNull
     @Override
     public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if(this.isAlive() && cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && this.itemHandler != null) {
+        if(this.isAlive() && cap == ForgeCapabilities.ITEM_HANDLER && this.itemHandler != null && this.isAlive()) {
             return itemHandler.cast();
         }
         return super.getCapability(cap, side);
@@ -158,8 +152,8 @@ public class Tractor extends Entity implements ContainerListener {
     }
 
     public void updateLastDrivePartialTick(float partialTick) {
-        double xStep = this.position().x - this.lastPos.x;
-        double zStep = this.position().z - this.lastPos.z;
+        double xStep = this.position().x - this.lastClientPos.x;
+        double zStep = this.position().z - this.lastClientPos.z;
 
         if(xStep * xStep + zStep * zStep != 0) {
             this.lastDrivePartialTick = partialTick;
@@ -167,8 +161,8 @@ public class Tractor extends Entity implements ContainerListener {
     }
 
     public void calcAnimStep() {
-        double xStep = this.position().x - this.lastPos.x;
-        double zStep = this.position().z - this.lastPos.z;
+        double xStep = this.position().x - this.lastClientPos.x;
+        double zStep = this.position().z - this.lastClientPos.z;
         float deg = (float) (Math.atan2(xStep, zStep) * 180 / Math.PI);
 
         if(xStep * xStep + zStep * zStep != 0) {
@@ -178,7 +172,7 @@ public class Tractor extends Entity implements ContainerListener {
     }
 
     @Override
-    public void positionRider(Entity entity) {
+    public void positionRider(Entity entity, Entity.MoveFunction moveFunction) {
         if(this.hasPassenger(entity)) {
             entity.setPos(this.calcOffset(0, 0.8, -0.5));
         }
@@ -188,7 +182,7 @@ public class Tractor extends Entity implements ContainerListener {
     public boolean hurt(DamageSource damageSource, float damage) {
         if(!this.level().isClientSide && !this.isRemoved()) {
             this.markHurt();
-            this.gameEvent(GameEvent.ENTITY_DAMAGED, damageSource.getEntity());
+            this.gameEvent(GameEvent.ENTITY_DAMAGE);
             float health = this.entityData.get(HEALTH) - damage;
             this.entityData.set(HEALTH, health);
 
@@ -221,9 +215,14 @@ public class Tractor extends Entity implements ContainerListener {
         return 1;
     }
 
-    public void toggleTillerPower() {
-        this.entityData.set(TILLER_ON, !this.entityData.get(TILLER_ON));
+    public Mode mode() {
+        return this.entityData.get(MODE);
     }
+
+    public void cycleMode() {
+        this.entityData.set(MODE, this.entityData.get(MODE).next());
+    }
+
 
     private void harvestCrop(BlockPos pos) {
         if(this.level().getBlockState(pos).getBlock() instanceof CropBlock cropBlock) {
@@ -240,26 +239,31 @@ public class Tractor extends Entity implements ContainerListener {
                     }
                 });
 
-                this.level().setBlockAndUpdate(pos, blockState.setValue(cropBlock.getAgeProperty(), 0));
+                this.level().setBlockAndUpdate(pos, cropBlock.getStateForAge(0));
             }
         }
     }
-    private static Property<Integer> getCropProperty(BlockState state, String propertyName) {
-        Block block = state.getBlock();
-        if (block instanceof CropBlock cropBlock) {
-            for (Property<?> prop : state.getProperties()) {
-                if (prop instanceof IntegerProperty && prop.getName().equals(propertyName)) {
-                    return (Property<Integer>) prop;
-                }
-            }
+
+    private void tillNewFarmland(BlockPos pos) {
+        pos = pos.below();
+        BlockState blockState = this.level().getBlockState(pos);
+        if (blockState.is(Blocks.DIRT) || blockState.is(Blocks.MYCELIUM) || blockState.is(Blocks.GRASS_BLOCK) || blockState.is(Blocks.PODZOL)) {
+            this.level().setBlockAndUpdate(pos, Blocks.FARMLAND.defaultBlockState());
         }
-        return null;
     }
-    private static int getMaxAge(Block block) {
-        if (block instanceof CropBlock cropBlock) {
-            return cropBlock.getMaxAge();
-        }
-        return 7;
+
+    public void harvest() {
+        Vec3 left = this.calcOffset(-1, 0.2, -1.65);
+        Vec3 mid = this.calcOffset(0, 0.2, -1.65);
+        Vec3 right = this.calcOffset(1, 0.2, -1.65);
+
+        BlockPos leftPos = new BlockPos((int)Math.floor(left.x), (int)Math.floor(left.y), (int)Math.floor(left.z));
+        BlockPos midPos = new BlockPos((int)Math.floor(mid.x), (int)Math.floor(mid.y), (int)Math.floor(mid.z));
+        BlockPos rightPos = new BlockPos((int)Math.floor(right.x), (int)Math.floor(right.y), (int)Math.floor(right.z));
+
+        this.harvestCrop(leftPos);
+        this.harvestCrop(midPos);
+        this.harvestCrop(rightPos);
     }
 
     public void till() {
@@ -326,34 +330,51 @@ public class Tractor extends Entity implements ContainerListener {
     @Override
     public void tick() {
         super.tick();
-        this.lastPos = this.position();
+        this.lastClientPos = this.position();
+
         if(this.isControlledByLocalInstance()) {
             this.lerpSteps = 0;
-            this.calcOffset(this.getX(), this.getY(), this.getZ()); //this could be wrong. changed setPacketCoordinates to calcOffset
-            this.setDeltaMovement(this.getDeltaMovement().multiply(FRICTION, 1, FRICTION).add(0, this.onGround() ? 0 : -GRAVITY, 0));
 
-            if(this.getDeltaMovement().length() < 0.01) {
-                this.setDeltaMovement(Vec3.ZERO);
-            }
+            Vec3 velocity = this.getDeltaMovement();
+            double dx = velocity.x * FRICTION;
+            if(Math.abs(dx) < 0.001) dx = 0;
+
+            double dz = velocity.z * FRICTION;
+            if(Math.abs(dz) < 0.001) dz = 0;
+
+            double dy = velocity.y + (this.onGround() ? 0 : -GRAVITY);
+
+            this.setDeltaMovement(dx, dy, dz);
 
             if(this.getControllingPassenger() instanceof LocalPlayer player) {
                 this.handleInput(player.input);
             }
             this.move(MoverType.SELF, this.getDeltaMovement());
+
+            if(this.lastClientPos.x != this.position().x || this.lastClientPos.y != this.position().y || this.lastClientPos.z != this.position().z) {
+                this.syncPacketPositionCodec(this.position().x, this.position().y, this.position().z);
+            }
         } else {
-            this.setDeltaMovement(Vec3.ZERO);
+            this.setDeltaMovement(0, 0, 0);
         }
 
         if(!this.level().isClientSide) {
-            if(this.entityData.get(TILLER_ON)) {
-                this.till();
+            Vec3 diff = this.lastServerPos.subtract(this.position());
+            this.lastServerPos = this.position();
+            if(this.isVehicle() && diff.length() != 0) {
+                if(this.entityData.get(MODE) == Mode.TILL) {
+                    this.till();
+                } else if(this.entityData.get(MODE) == Mode.HARVEST) {
+                    this.harvest();
+                }
+
             }
 
             if(this.isUnderWater()) {
-                this.hurt(DamageTypes.DROWN, 1);
+                this.hurt(this.damageSources().drown(), 1);
                 this.ejectPassengers();
             }
-        } else if(this.entityData.get(TILLER_ON)) {
+        } else if(this.entityData.get(MODE) != Mode.NO) {
             Vec3 pos = this.calcOffset(0.9, 3.7, 0.1);
             double yVel = this.random.nextDouble();
             if(yVel > 0.75) {
@@ -415,7 +436,7 @@ public class Tractor extends Entity implements ContainerListener {
     protected void defineSynchedData() {
         this.entityData.define(TEXTURE, DEFAULT_TEXTURE);
         this.entityData.define(HEALTH, MAX_HEALTH);
-        this.entityData.define(TILLER_ON, false);
+        this.entityData.define(MODE, Mode.NO);
     }
 
     @Override
@@ -423,7 +444,7 @@ public class Tractor extends Entity implements ContainerListener {
         ResourceLocation texture = ResourceLocation.tryParse(compoundTag.getString("Texture"));
         this.entityData.set(TEXTURE, texture == null ? DEFAULT_TEXTURE : texture);
         this.entityData.set(HEALTH, compoundTag.getFloat("Health"));
-        this.entityData.set(TILLER_ON, compoundTag.getBoolean("TillerOn"));
+        this.entityData.set(MODE, Mode.values()[compoundTag.getInt("Mode")]);
 
         ListTag listTag = compoundTag.getList("Items", 10);
         for(int i = 0; i < listTag.size(); i++) {
@@ -439,7 +460,7 @@ public class Tractor extends Entity implements ContainerListener {
     protected void addAdditionalSaveData(CompoundTag compoundTag) {
         compoundTag.putString("Texture", this.entityData.get(TEXTURE).toString());
         compoundTag.putFloat("Health", this.entityData.get(HEALTH));
-        compoundTag.putBoolean("TillerOn", this.entityData.get(TILLER_ON));
+        compoundTag.putInt("Mode", this.entityData.get(MODE).ordinal());
 
         ListTag listTag = new ListTag();
         for(int i = 0; i < this.inventory.getContainerSize(); i++) {
@@ -462,5 +483,21 @@ public class Tractor extends Entity implements ContainerListener {
     @Override
     public void containerChanged(Container container) {
 
+    }
+
+    enum Mode {
+        TILL(new ResourceLocation(LittleTractorMain.MODID, "textures/gui/tillmode.png")),
+        HARVEST(new ResourceLocation(LittleTractorMain.MODID, "textures/gui/harvestmode.png")),
+        NO(new ResourceLocation(LittleTractorMain.MODID, "textures/gui/nomode.png"));
+
+        final ResourceLocation texture;
+
+        Mode(ResourceLocation texture) {
+            this.texture = texture;
+        }
+
+        public Mode next() {
+            return Mode.values()[(this.ordinal() + 1) % Mode.values().length];
+        }
     }
 }
