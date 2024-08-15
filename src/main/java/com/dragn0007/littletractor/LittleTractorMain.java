@@ -46,6 +46,7 @@ public class LittleTractorMain
         EntityDataSerializers.registerSerializer(MODE);
         ENTITY_TYPES.register(eventBus);
         ITEMS.register(eventBus);
+        CreativeTabModifier.CREATIVE_MODE_TABS.register(eventBus);
 
         MinecraftForge.EVENT_BUS.register(this);
     }
