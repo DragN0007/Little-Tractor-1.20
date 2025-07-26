@@ -29,6 +29,7 @@ import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -59,23 +60,23 @@ public class Tractor extends Entity implements ContainerListener {
 
     private static final ResourceLocation DEFAULT_TEXTURE = new ResourceLocation(LittleTractorMain.MODID, "textures/entity/green.png");
 
-    private static final Map<DyeItem, ResourceLocation> COLOR_MAP = new HashMap<>() {{
-        put(DyeItem.byColor(DyeColor.BLACK), new ResourceLocation(LittleTractorMain.MODID, "textures/entity/black.png"));
-        put(DyeItem.byColor(DyeColor.BLUE), new ResourceLocation(LittleTractorMain.MODID, "textures/entity/blue.png"));
-        put(DyeItem.byColor(DyeColor.BROWN), new ResourceLocation(LittleTractorMain.MODID, "textures/entity/brown.png"));
-        put(DyeItem.byColor(DyeColor.CYAN), new ResourceLocation(LittleTractorMain.MODID, "textures/entity/cyan.png"));
-        put(DyeItem.byColor(DyeColor.GRAY), new ResourceLocation(LittleTractorMain.MODID, "textures/entity/dark_grey.png"));
-        put(DyeItem.byColor(DyeColor.LIGHT_BLUE), new ResourceLocation(LittleTractorMain.MODID, "textures/entity/light_blue.png"));
-        put(DyeItem.byColor(DyeColor.LIGHT_GRAY), new ResourceLocation(LittleTractorMain.MODID, "textures/entity/light_grey.png"));
-        put(DyeItem.byColor(DyeColor.LIME), new ResourceLocation(LittleTractorMain.MODID, "textures/entity/lime_green.png"));
-        put(DyeItem.byColor(DyeColor.MAGENTA), new ResourceLocation(LittleTractorMain.MODID, "textures/entity/magenta.png"));
-        put(DyeItem.byColor(DyeColor.ORANGE), new ResourceLocation(LittleTractorMain.MODID, "textures/entity/orange.png"));
-        put(DyeItem.byColor(DyeColor.PINK), new ResourceLocation(LittleTractorMain.MODID, "textures/entity/pink.png"));
-        put(DyeItem.byColor(DyeColor.PURPLE), new ResourceLocation(LittleTractorMain.MODID, "textures/entity/purple.png"));
-        put(DyeItem.byColor(DyeColor.RED), new ResourceLocation(LittleTractorMain.MODID, "textures/entity/red.png"));
-        put(DyeItem.byColor(DyeColor.WHITE), new ResourceLocation(LittleTractorMain.MODID, "textures/entity/white.png"));
-        put(DyeItem.byColor(DyeColor.GREEN), new ResourceLocation(LittleTractorMain.MODID, "textures/entity/green.png"));
-        put(DyeItem.byColor(DyeColor.YELLOW), new ResourceLocation(LittleTractorMain.MODID, "textures/entity/yellow.png"));
+    private static final Map<DyeColor, ResourceLocation> COLOR_MAP = new HashMap<>() {{
+        put(DyeColor.BLACK, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/black.png"));
+        put(DyeColor.BLUE, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/blue.png"));
+        put(DyeColor.BROWN, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/brown.png"));
+        put(DyeColor.CYAN, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/cyan.png"));
+        put(DyeColor.GRAY, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/dark_grey.png"));
+        put(DyeColor.LIGHT_BLUE, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/light_blue.png"));
+        put(DyeColor.LIGHT_GRAY, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/light_grey.png"));
+        put(DyeColor.LIME, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/lime_green.png"));
+        put(DyeColor.MAGENTA, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/magenta.png"));
+        put(DyeColor.ORANGE, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/orange.png"));
+        put(DyeColor.PINK, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/pink.png"));
+        put(DyeColor.PURPLE, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/purple.png"));
+        put(DyeColor.RED, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/red.png"));
+        put(DyeColor.WHITE, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/white.png"));
+        put(DyeColor.GREEN, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/green.png"));
+        put(DyeColor.YELLOW, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/yellow.png"));
     }};
 
     private static final float MAX_HEALTH = 20f;
@@ -410,7 +411,7 @@ public class Tractor extends Entity implements ContainerListener {
                 this.level().playSound(player, this, SoundEvents.DYE_USE, SoundSource.PLAYERS, 1f, 1f);
 
                 if (!this.level().isClientSide) {
-                    this.entityData.set(TEXTURE, COLOR_MAP.get(dyeItem));
+                    this.entityData.set(TEXTURE, COLOR_MAP.getOrDefault(dyeItem.getDyeColor(), DEFAULT_TEXTURE));
                     itemStack.shrink(1);
                 }
 
