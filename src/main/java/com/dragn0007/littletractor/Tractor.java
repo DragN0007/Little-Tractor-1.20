@@ -65,10 +65,10 @@ public class Tractor extends Entity implements ContainerListener {
         put(DyeColor.BLUE, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/blue.png"));
         put(DyeColor.BROWN, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/brown.png"));
         put(DyeColor.CYAN, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/cyan.png"));
-        put(DyeColor.GRAY, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/dark_grey.png"));
+        put(DyeColor.GRAY, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/grey.png"));
         put(DyeColor.LIGHT_BLUE, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/light_blue.png"));
         put(DyeColor.LIGHT_GRAY, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/light_grey.png"));
-        put(DyeColor.LIME, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/lime_green.png"));
+        put(DyeColor.LIME, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/lime.png"));
         put(DyeColor.MAGENTA, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/magenta.png"));
         put(DyeColor.ORANGE, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/orange.png"));
         put(DyeColor.PINK, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/pink.png"));
