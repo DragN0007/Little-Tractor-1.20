@@ -34,7 +34,7 @@ public class TractorModel extends EntityModel<Tractor> {
 				.texOffs(176, 70).addBox(10.0833F, -0.6332F, 3.2931F, 4.0F, 2.0F, 12.0F, new CubeDeformation(0.0F))
 				.texOffs(64, 148).addBox(-19.9167F, -0.6332F, 3.2931F, 4.0F, 2.0F, 12.0F, new CubeDeformation(0.0F))
 				.texOffs(159, 167).addBox(-19.9167F, 9.3668F, -22.7069F, 34.0F, 2.0F, 9.0F, new CubeDeformation(0.0F))
-				.texOffs(115, 0).addBox(-15.9167F, -17.5091F, -3.5492F, 26.0F, 2.0F, 29.0F, new CubeDeformation(0.0F))
+				.texOffs(115, 0).addBox(-15.9167F, -17.4091F, -3.5492F, 26.0F, 2.0F, 29.0F, new CubeDeformation(0.0F))
 				.texOffs(104, 58).addBox(-13.9167F, 3.4909F, -28.5492F, 22.0F, 17.0F, 28.0F, new CubeDeformation(0.0F))
 				.texOffs(0, 0).addBox(-13.9167F, -15.5091F, 19.4508F, 22.0F, 36.0F, 4.0F, new CubeDeformation(0.0F))
 				.texOffs(0, 58).addBox(8.0833F, -15.5091F, -1.5492F, 1.0F, 15.0F, 23.0F, new CubeDeformation(0.0F))
@@ -42,9 +42,9 @@ public class TractorModel extends EntityModel<Tractor> {
 				.texOffs(0, 58).addBox(-14.9167F, -15.5091F, -1.5492F, 1.0F, 15.0F, 23.0F, new CubeDeformation(0.0F))
 				.texOffs(52, 79).addBox(-15.9167F, -0.5091F, -26.5492F, 2.0F, 21.0F, 48.0F, new CubeDeformation(0.0F))
 				.texOffs(0, 58).addBox(8.0833F, -0.5091F, -26.5492F, 2.0F, 21.0F, 48.0F, new CubeDeformation(0.0F))
-				.texOffs(158, 216).addBox(8.0833F, -22.5091F, -0.7492F, 4.0F, 26.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(44, 40).addBox(9.0833F, -33.5091F, 0.2508F, 2.0F, 11.0F, 2.0F, new CubeDeformation(0.0F))
-				.texOffs(0, 58).addBox(9.0833F, 3.4909F, 0.2508F, 3.0F, 2.0F, 2.0F, new CubeDeformation(0.0F))
+				.texOffs(158, 216).addBox(8.1833F, -22.5091F, -0.7492F, 4.0F, 26.0F, 4.0F, new CubeDeformation(-0.005F))
+				.texOffs(44, 40).addBox(9.1833F, -33.5091F, 0.2508F, 2.0F, 11.0F, 2.0F, new CubeDeformation(0.0F))
+				.texOffs(0, 58).addBox(9.1833F, 3.4909F, 0.2508F, 3.0F, 2.0F, 2.0F, new CubeDeformation(0.0F))
 				.texOffs(123, 121).addBox(-13.9167F, -1.5091F, -29.5492F, 22.0F, 5.0F, 29.0F, new CubeDeformation(0.0F)), PartPose.offset(2.9167F, -5.4909F, 2.5492F));
 
 		PartDefinition cube_r1 = Body.addOrReplaceChild("cube_r1", CubeListBuilder.create().texOffs(24, 96).addBox(13.0F, -2.5F, -16.0F, 4.0F, 2.0F, 8.0F, new CubeDeformation(0.0F))
@@ -52,25 +52,25 @@ public class TractorModel extends EntityModel<Tractor> {
 
 		PartDefinition cube_r2 = Body.addOrReplaceChild("cube_r2", CubeListBuilder.create().texOffs(0, 172).addBox(-17.0F, -2.5F, -16.0F, 34.0F, 2.0F, 9.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-2.9167F, 21.9909F, -3.5492F, -0.7418F, 0.0F, 0.0F));
 
-		PartDefinition FrontWheels = partdefinition.addOrReplaceChild("FrontWheels", CubeListBuilder.create().texOffs(215, 82).addBox(13.0F, -8.5F, -3.5F, 6.0F, 17.0F, 7.0F, new CubeDeformation(0.0F))
-				.texOffs(196, 121).addBox(-19.0F, -8.5F, -3.5F, 6.0F, 17.0F, 7.0F, new CubeDeformation(0.0F))
+		PartDefinition FrontWheels = partdefinition.addOrReplaceChild("FrontWheels", CubeListBuilder.create().texOffs(215, 82).addBox(13.0F, -8.5F, -3.5F, 6.0F, 17.0F, 7.0F, new CubeDeformation(-0.005F))
+				.texOffs(196, 121).addBox(-19.0F, -8.5F, -3.5F, 6.0F, 17.0F, 7.0F, new CubeDeformation(-0.005F))
 				.texOffs(115, 41).addBox(-20.0F, -2.5F, -2.5F, 40.0F, 5.0F, 5.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 15.5F, -15.5F));
 
 		PartDefinition cube_r3 = FrontWheels.addOrReplaceChild("cube_r3", CubeListBuilder.create().texOffs(106, 210).addBox(-2.0F, -8.5F, -3.5F, 6.0F, 17.0F, 7.0F, new CubeDeformation(0.0F))
 				.texOffs(104, 58).addBox(-34.0F, -8.5F, -3.5F, 6.0F, 17.0F, 7.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(15.0F, 0.0F, 0.0F, -0.7854F, 0.0F, 0.0F));
 
-		PartDefinition cube_r4 = FrontWheels.addOrReplaceChild("cube_r4", CubeListBuilder.create().texOffs(132, 210).addBox(-2.0F, -8.5F, -3.5F, 6.0F, 17.0F, 7.0F, new CubeDeformation(0.0F))
-				.texOffs(196, 0).addBox(-34.0F, -8.5F, -3.5F, 6.0F, 17.0F, 7.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(15.0F, 0.0F, 0.0F, -1.5708F, 0.0F, 0.0F));
+		PartDefinition cube_r4 = FrontWheels.addOrReplaceChild("cube_r4", CubeListBuilder.create().texOffs(132, 210).addBox(-2.0F, -8.5F, -3.5F, 6.0F, 17.0F, 7.0F, new CubeDeformation(-0.005F))
+				.texOffs(196, 0).addBox(-34.0F, -8.5F, -3.5F, 6.0F, 17.0F, 7.0F, new CubeDeformation(-0.005F)), PartPose.offsetAndRotation(15.0F, 0.0F, 0.0F, -1.5708F, 0.0F, 0.0F));
 
 		PartDefinition cube_r5 = FrontWheels.addOrReplaceChild("cube_r5", CubeListBuilder.create().texOffs(80, 210).addBox(-2.0F, -8.5F, -3.5F, 6.0F, 17.0F, 7.0F, new CubeDeformation(0.0F))
 				.texOffs(115, 0).addBox(-34.0F, -8.5F, -3.5F, 6.0F, 17.0F, 7.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(15.0F, 0.0F, 0.0F, -2.3562F, 0.0F, 0.0F));
 
-		PartDefinition Backwheels = partdefinition.addOrReplaceChild("Backwheels", CubeListBuilder.create().texOffs(195, 178).addBox(13.0F, -13.5F, -5.5F, 9.0F, 27.0F, 11.0F, new CubeDeformation(0.0F))
-				.texOffs(52, 58).addBox(-22.0F, -13.5F, -5.5F, 9.0F, 27.0F, 11.0F, new CubeDeformation(0.0F))
+		PartDefinition Backwheels = partdefinition.addOrReplaceChild("Backwheels", CubeListBuilder.create().texOffs(195, 178).addBox(13.0F, -13.5F, -5.5F, 9.0F, 27.0F, 11.0F, new CubeDeformation(-0.005F))
+				.texOffs(52, 58).addBox(-22.0F, -13.5F, -5.5F, 9.0F, 27.0F, 11.0F, new CubeDeformation(-0.005F))
 				.texOffs(115, 31).addBox(-23.0F, -2.5F, -2.5F, 46.0F, 5.0F, 5.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 10.5F, 11.5F));
 
-		PartDefinition cube_r6 = Backwheels.addOrReplaceChild("cube_r6", CubeListBuilder.create().texOffs(40, 199).addBox(-2.0F, -13.5F, -5.5F, 9.0F, 27.0F, 11.0F, new CubeDeformation(0.0F))
-				.texOffs(115, 172).addBox(-37.0F, -13.5F, -5.5F, 9.0F, 27.0F, 11.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(15.0F, 0.0F, 0.0F, -1.5708F, 0.0F, 0.0F));
+		PartDefinition cube_r6 = Backwheels.addOrReplaceChild("cube_r6", CubeListBuilder.create().texOffs(40, 199).addBox(-2.0F, -13.5F, -5.5F, 9.0F, 27.0F, 11.0F, new CubeDeformation(-0.005F))
+				.texOffs(115, 172).addBox(-37.0F, -13.5F, -5.5F, 9.0F, 27.0F, 11.0F, new CubeDeformation(-0.005F)), PartPose.offsetAndRotation(15.0F, 0.0F, 0.0F, -1.5708F, 0.0F, 0.0F));
 
 		PartDefinition cube_r7 = Backwheels.addOrReplaceChild("cube_r7", CubeListBuilder.create().texOffs(155, 178).addBox(-7.0F, -13.5F, -5.5F, 9.0F, 27.0F, 11.0F, new CubeDeformation(0.0F))
 				.texOffs(198, 44).addBox(28.0F, -13.5F, -5.5F, 9.0F, 27.0F, 11.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-15.0F, 0.0F, 0.0F, -2.3562F, 0.0F, 0.0F));
