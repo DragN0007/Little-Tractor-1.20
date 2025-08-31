@@ -54,13 +54,13 @@ import static com.dragn0007.littletractor.LittleTractorMain.mod;
 
 public class Tractor extends Entity implements ContainerListener {
 
-    private static final EntityDataAccessor<ResourceLocation> TEXTURE = SynchedEntityData.defineId(Tractor.class, LittleTractorMain.RESOURCE_SERIALIZER);
-    private static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(Tractor.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<String> TEXTURE = SynchedEntityData.defineId(Tractor.class, EntityDataSerializers.STRING);
+    public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(Tractor.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Mode> MODE = SynchedEntityData.defineId(Tractor.class, LittleTractorMain.MODE);
 
-    private static final ResourceLocation DEFAULT_TEXTURE = new ResourceLocation(LittleTractorMain.MODID, "textures/entity/green.png");
+    public static final ResourceLocation DEFAULT_TEXTURE = new ResourceLocation(LittleTractorMain.MODID, "textures/entity/green.png");
 
-    private static final Map<DyeColor, ResourceLocation> COLOR_MAP = new HashMap<>() {{
+    public static final Map<DyeColor, ResourceLocation> COLOR_MAP = new HashMap<>() {{
         put(DyeColor.BLACK, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/black.png"));
         put(DyeColor.BLUE, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/blue.png"));
         put(DyeColor.BROWN, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/brown.png"));
@@ -79,17 +79,17 @@ public class Tractor extends Entity implements ContainerListener {
         put(DyeColor.YELLOW, new ResourceLocation(LittleTractorMain.MODID, "textures/entity/yellow.png"));
     }};
 
-    private static final float MAX_HEALTH = 20f;
-    private static final float SPEED = 0.07f;
-    private static final float TURN_SPEED = 1f;
-    private static final float MAX_TURN = 5f;
-    private static final float FRICTION = 0.7f;
-    private static final float GRAVITY = 0.08f;
+    public static final float MAX_HEALTH = 20f;
+    public static final float SPEED = 0.07f;
+    public static final float TURN_SPEED = 1f;
+    public static final float MAX_TURN = 5f;
+    public static final float FRICTION = 0.7f;
+    public static final float GRAVITY = 0.08f;
 
 
-    private float targetRotation = 0;
-    private float currentRotation = 0;
-    private int tillerCooldown = 0;
+    public float targetRotation = 0;
+    public float currentRotation = 0;
+    public int tillerCooldown = 0;
     public int forwardMotion = 1;
 
     public int driveTick = 0;
@@ -98,13 +98,13 @@ public class Tractor extends Entity implements ContainerListener {
     public Vec3 lastServerPos = Vec3.ZERO;
 
     public SimpleContainer inventory;
-    private LazyOptional<?> itemHandler;
+    public LazyOptional<?> itemHandler;
 
-    private int lerpSteps;
-    private double targetX;
-    private double targetY;
-    private double targetZ;
-    private float targetYRot;
+    public int lerpSteps;
+    public double targetX;
+    public double targetY;
+    public double targetZ;
+    public float targetYRot;
 
     public Tractor(EntityType<?> entityType, Level level) {
         super(entityType, level);
@@ -142,7 +142,7 @@ public class Tractor extends Entity implements ContainerListener {
         return true;
     }
 
-    private Vec3 calcOffset(double x, double y, double z) {
+    public Vec3 calcOffset(double x, double y, double z) {
         double rad = this.getYRot() * Math.PI / 180;
 
         double xOffset = this.position().x + (x * Math.cos(rad) - z * Math.sin(rad));
@@ -224,8 +224,15 @@ public class Tractor extends Entity implements ContainerListener {
         this.entityData.set(MODE, this.entityData.get(MODE).next());
     }
 
+    public String getTexture() {
+        return this.entityData.get(TEXTURE);
+    }
 
-    private void harvestCrop(BlockPos pos) {
+    public void setTexture(String texture) {
+        this.entityData.set(TEXTURE, texture);
+    }
+
+    public void harvestCrop(BlockPos pos) {
         if(this.level().getBlockState(pos).getBlock() instanceof CropBlock cropBlock) {
             BlockState blockState = this.level().getBlockState(pos);
 
@@ -245,7 +252,7 @@ public class Tractor extends Entity implements ContainerListener {
         }
     }
 
-    private void tillNewFarmland(BlockPos pos) {
+    public void tillNewFarmland(BlockPos pos) {
         pos = pos.below();
         BlockState blockState = this.level().getBlockState(pos);
         if (blockState.is(Blocks.DIRT) || blockState.is(Blocks.MYCELIUM) || blockState.is(Blocks.GRASS_BLOCK) || blockState.is(Blocks.PODZOL)) {
@@ -281,7 +288,7 @@ public class Tractor extends Entity implements ContainerListener {
         this.tillNewFarmland(rightPos);
     }
 
-    private void handleInput(Input input) {
+    public void handleInput(Input input) {
         float forward = 0;
         float turn = 0;
         int turnMod = 1;
@@ -411,7 +418,7 @@ public class Tractor extends Entity implements ContainerListener {
                 this.level().playSound(player, this, SoundEvents.DYE_USE, SoundSource.PLAYERS, 1f, 1f);
 
                 if (!this.level().isClientSide) {
-                    this.entityData.set(TEXTURE, COLOR_MAP.getOrDefault(dyeItem.getDyeColor(), DEFAULT_TEXTURE));
+                    this.setTexture(COLOR_MAP.get(dyeItem.getDyeColor()).toString());
                     itemStack.shrink(1);
                 }
 
@@ -429,21 +436,16 @@ public class Tractor extends Entity implements ContainerListener {
         return super.interact(player, hand);
     }
 
-    public ResourceLocation getTextureLocation() {
-        return this.entityData.get(TEXTURE);
-    }
-
     @Override
-    protected void defineSynchedData() {
-        this.entityData.define(TEXTURE, DEFAULT_TEXTURE);
+    public void defineSynchedData() {
+        this.entityData.define(TEXTURE, DEFAULT_TEXTURE.toString());
         this.entityData.define(HEALTH, MAX_HEALTH);
         this.entityData.define(MODE, Mode.NO);
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag compoundTag) {
-        ResourceLocation texture = ResourceLocation.tryParse(compoundTag.getString("Texture"));
-        this.entityData.set(TEXTURE, texture == null ? DEFAULT_TEXTURE : texture);
+    public void readAdditionalSaveData(CompoundTag compoundTag) {
+        this.entityData.set(TEXTURE, compoundTag.getString("Texture"));
         this.entityData.set(HEALTH, compoundTag.getFloat("Health"));
         this.entityData.set(MODE, Mode.values()[compoundTag.getInt("Mode")]);
 
@@ -458,7 +460,7 @@ public class Tractor extends Entity implements ContainerListener {
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag compoundTag) {
+    public void addAdditionalSaveData(CompoundTag compoundTag) {
         compoundTag.putString("Texture", this.entityData.get(TEXTURE).toString());
         compoundTag.putFloat("Health", this.entityData.get(HEALTH));
         compoundTag.putInt("Mode", this.entityData.get(MODE).ordinal());

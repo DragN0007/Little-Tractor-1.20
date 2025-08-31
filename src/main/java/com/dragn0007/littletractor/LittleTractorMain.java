@@ -27,7 +27,7 @@ public class LittleTractorMain
     public static final String MODID = "liltractor";
 
     public static final EntityDataSerializer<Tractor.Mode> MODE = EntityDataSerializer.simpleEnum(Tractor.Mode.class);
-    public static final EntityDataSerializer<ResourceLocation> RESOURCE_SERIALIZER = EntityDataSerializer.simple(FriendlyByteBuf::writeResourceLocation, FriendlyByteBuf::readResourceLocation);
+    //public static final EntityDataSerializer<ResourceLocation> RESOURCE_SERIALIZER = EntityDataSerializer.simple(FriendlyByteBuf::writeResourceLocation, FriendlyByteBuf::readResourceLocation);
 
 
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, MODID);
@@ -37,13 +37,13 @@ public class LittleTractorMain
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
     public static final RegistryObject<Item> TRACTOR_SPAWN_EGG = ITEMS.register("liltractor", TractorItem::new);
 
+    static {
+        EntityDataSerializers.registerSerializer(MODE);
+    }
 
     public LittleTractorMain() {
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
         eventBus.addListener(this::setup);
-
-        EntityDataSerializers.registerSerializer(RESOURCE_SERIALIZER);
-        EntityDataSerializers.registerSerializer(MODE);
         ENTITY_TYPES.register(eventBus);
         ITEMS.register(eventBus);
         CreativeTabModifier.CREATIVE_MODE_TABS.register(eventBus);

@@ -11,7 +11,12 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class TractorRenderer extends EntityRenderer<Tractor> {
+
+    public static Map<String, ResourceLocation> CACHED_TEXTURES = new HashMap<>();
 
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation(LittleTractorMain.MODID, "tractor"), "main");
 
@@ -51,6 +56,12 @@ public class TractorRenderer extends EntityRenderer<Tractor> {
     }
 
     @Override
+    public ResourceLocation getTextureLocation(Tractor tractor) {
+        String texture = tractor.getTexture();
+        return CACHED_TEXTURES.computeIfAbsent(texture, ResourceLocation::tryParse);
+    }
+
+    @Override
     public void render(Tractor tractor, float rotation, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
         poseStack.pushPose();
 
@@ -61,16 +72,10 @@ public class TractorRenderer extends EntityRenderer<Tractor> {
         this.model.prepareMobModel(tractor, 0, 0, partialTick);
         this.model.setupAnim(tractor, partialTick, 0, 0, 0, 0);
 
-        VertexConsumer vertexConsumer = bufferSource.getBuffer(this.model.renderType(tractor.getTextureLocation()));
+        VertexConsumer vertexConsumer = bufferSource.getBuffer(this.model.renderType(this.getTextureLocation(tractor)));
         this.model.renderToBuffer(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, 1, 1, 1, 1);
 
         poseStack.popPose();
         super.render(tractor, rotation, partialTick, poseStack, bufferSource, packedLight);
-    }
-
-    @Override
-    @NotNull
-    public ResourceLocation getTextureLocation(Tractor tractor) {
-        return tractor.getTextureLocation();
     }
 }
